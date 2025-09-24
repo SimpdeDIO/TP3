@@ -1,5 +1,31 @@
 import clase
 
+#esto es para la r2.1
+def porcentaje_promedio(envios):
+    sum_p = 0
+    for envio in envios:
+        mot, com = monto_base(envio.monto, envio.alg_comision)
+        porc = (com / envio.monto) * 100
+        sum_p += porc
+    promedio = sum_p / len(envios)
+    return round(promedio, 2)
+
+#esto es para el r2.2
+def mayor_descuento(envios):
+    max_porc = 0
+    id_pago_max = ""
+
+    for envio in envios:
+        monto_b, comi = monto_base(envio.monto, envio.alg_comision)
+        monto_f = monto_final(monto_b, envio.alg_impositivo)
+        desc_total = envio.monto - monto_f
+        porc_desc = (desc_total / envio.monto) * 100
+
+        if porc_desc > max_porc:
+            max_porc = porc_desc
+            id_pago_max = envio.identificador_pago
+    return id_pago_max
+
 def monto_final(monto_base, alg_imp):
     monto_final = 0
     impuesto = 0
@@ -76,21 +102,22 @@ def monto_base(monto_nominal, alg_comision):
 
         monto_base = monto_nominal - comision
 
-    return monto_base, a
+    return monto_base, comision
 
 
 def mostrar(v):
-    n = len(v)
-    monto_final = 0
-    ac = c = 0
+    suma_porc = 0
+    for envio in v:
+        monto_b, comision = monto_base(envio.monto, envio.alg_comision)
+        porc_comision = (comision / envio.monto) * 100
+        suma_porc += porc_comision
+    #r2.1
+    promedio_comisiones = suma_porc / len(v)
+    print("r2.1:", round(promedio_comisiones, 2))
 
-
-    for i in range(n):
-        monto_base, a = monto_base(v[i].monto, v[i].alg_comision)
-        ac += a
-        c += 1
-
-        monto_final = monto_final(monto_base, v[i].alg_impositivo)
+    #r2.2
+    id_pago_max = mayor_descuento(v)
+    print("r2.2:", id_pago_max)
 
 def cargar_envios(envios):
     v = []
@@ -101,13 +128,10 @@ def cargar_envios(envios):
         v.append(envio)
     return v
 
-
-
-
 def pasaje_desde_csv(linea):
     # 01|05|AB4F35
     partes1 = linea[0].split("|")
-    print(partes1)
+    print(partes1) #alguno me va a tener q explicar esto despues (soy ulise)
     mod_origen = int(partes1[0])
     mod_pago = int(partes1[1])
     id_pago = partes1[2]
@@ -135,7 +159,7 @@ def principal():
             print(v)
         elif op == 2:
             if v:
-                pass
+                mostrar(v)
             else:
                 print("Debe cargar primero el vector")
         else:
