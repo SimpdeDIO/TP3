@@ -29,6 +29,7 @@ def mayor_descuento(envios):
     return id_pago_max
 
 
+#esto es para el r2.3
 def monto_final_2_3(envios):
     max_porc = 0
     max_monto_final = ""
