@@ -1,44 +1,4 @@
 import clase
-#esto es para la r2.1
-def porcentaje_promedio(envios):
-    sum_p = 0
-    for envio in envios:
-        mot, com = monto_base(envio.monto, envio.alg_comision)
-        porc = (com / envio.monto) * 100
-        sum_p += porc
-    promedio = sum_p / len(envios)
-    return round(promedio, 2)
-
-#esto es para el r2.2
-def mayor_descuento(envios):
-    max_porc = 0
-    id_pago_max = ""
-
-    for envio in envios:
-        monto_b, comi = monto_base(envio.monto, envio.alg_comision)
-        monto_f = monto_final(monto_b, envio.alg_impositivo)
-        desc_total = envio.monto - monto_f
-        porc_desc = (desc_total / envio.monto) * 100
-
-        if porc_desc > max_porc:
-            max_porc = porc_desc
-            id_pago_max = envio.identificador_pago
-    return id_pago_max
-
-#esto es para el r2.3
-def monto_final_2_3(envios):
-    max_porc = 0
-    max_monto_final = ""
-    for envio in envios:
-        monto_b, comi = monto_base(envio.monto, envio.alg_comision)
-        monto_f = monto_final(monto_b, envio.alg_impositivo)
-        desc_total = envio.monto - monto_f
-        porc_desc = (desc_total / envio.monto) * 100
-
-        if porc_desc > max_porc:
-            max_porc = porc_desc
-            max_monto_final = envio.monto
-    return max_monto_final
 
 #esto es para el r2.4
 def mayor_monto_por_moneda(envios):
@@ -113,7 +73,8 @@ def monto_base(monto_nominal, alg_comision):
             comision += monto_fijo
         else:
             comision = monto_fijo
-            monto_base = monto_nominal - comision
+
+        monto_base = monto_nominal - comision
     elif alg_comision == 4:
         if monto_nominal <= 100000:
             comision = 500
@@ -136,20 +97,31 @@ def monto_base(monto_nominal, alg_comision):
 
 def mostrar(v):
     suma_porc = 0
+    max_porc = 0
+    id_pago_max = ""
+    monto_final_max = 0
+
     for envio in v:
         monto_b, comision = monto_base(envio.monto, envio.alg_comision)
         porc_comision = (comision / envio.monto) * 100
         suma_porc += porc_comision
+
+        #r2.2
+        monto_f = monto_final(monto_b, envio.alg_impositivo)
+        desc_total = envio.monto - monto_f
+        porc_desc = (desc_total / envio.monto) * 100
+
+        if porc_desc > max_porc:
+            max_porc = porc_desc
+            monto_final_max = round(monto_f, 2)
+            id_pago_max = str(envio.identificador_pago)
+
     #r2.1
     promedio_comisiones = suma_porc / len(v)
     print("r2.1: ", round(promedio_comisiones, 2))
-
     #r2.2
-    id_pago_max = mayor_descuento(v)
     print("r2.2: ", id_pago_max)
-
     #r2.3
-    monto_final_max = monto_final_2_3(v)
     print("r2.3: ", monto_final_max)
 
     #r2.4
