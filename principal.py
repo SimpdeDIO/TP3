@@ -151,7 +151,7 @@ def mostrar(v):
         suma_porc += porc_comision
     #r2.1
     promedio_comisiones = suma_porc / len(v)
-    print("r2.1: ", round(promedio_comisiones, 2), "%")
+    print("r2.1: ", round(promedio_comisiones, 2))
 
     #r2.2
     id_pago_max = mayor_descuento(v)
