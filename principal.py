@@ -1,5 +1,6 @@
 import clase
 
+
 #esto es para la r2.1
 def porcentaje_promedio(envios):
     sum_p = 0
@@ -9,6 +10,7 @@ def porcentaje_promedio(envios):
         sum_p += porc
     promedio = sum_p / len(envios)
     return round(promedio, 2)
+
 
 #esto es para el r2.2
 def mayor_descuento(envios):
@@ -25,6 +27,23 @@ def mayor_descuento(envios):
             max_porc = porc_desc
             id_pago_max = envio.identificador_pago
     return id_pago_max
+
+
+def monto_final_2_3(envios):
+    max_porc = 0
+    max_monto_final = ""
+
+    for envio in envios:
+        monto_b, comi = monto_base(envio.monto, envio.alg_comision)
+        monto_f = monto_final(monto_b, envio.alg_impositivo)
+        desc_total = envio.monto - monto_f
+        porc_desc = (desc_total / envio.monto) * 100
+
+        if porc_desc > max_porc:
+            max_porc = porc_desc
+            max_monto_final = envio.monto
+    return max_monto_final
+
 
 def monto_final(monto_base, alg_imp):
     monto_final = 0
@@ -113,11 +132,16 @@ def mostrar(v):
         suma_porc += porc_comision
     #r2.1
     promedio_comisiones = suma_porc / len(v)
-    print("r2.1:", round(promedio_comisiones, 2))
+    print("r2.1: ", round(promedio_comisiones, 2), "%")
 
     #r2.2
     id_pago_max = mayor_descuento(v)
-    print("r2.2:", id_pago_max)
+    print("r2.2: ", id_pago_max)
+
+    #r2.3
+    monto_final_max = monto_final_2_3(v)
+    print("r2.3: ", monto_final_max)
+
 
 def cargar_envios(envios):
     v = []
@@ -128,15 +152,19 @@ def cargar_envios(envios):
         linea_1 = linea.split(",")
         envio = pasaje_desde_csv(linea_1)
         v.append(envio)
+        #esto es para r1.1
         envios_leidos_cargados += 1
 
+    #esto es para r1.2
     n = len(v)
     for i in range(n):
         if v[i].codigo_pago != v[i].codigo_origen:
             envios_diferentes += 1
-    print(envios_leidos_cargados)
-    print(envios_diferentes)
+
+    print("r1.1: ", envios_leidos_cargados)
+    print("r1.2: ", envios_diferentes)
     return v
+
 
 def pasaje_desde_csv(linea):
 
@@ -161,10 +189,11 @@ def principal():
     v = []
     op = -1
     while op != 0:
+        print("== MENU ==")
         print("1. Cargar Envíos")
         print("2. Mostrar Resultados")
         print("0. Salir")
-        op = int(input("Ingresa una opcionde del menu: "))
+        op = int(input("Ingresa opcion: "))
 
         if op == 1:
             v = cargar_envios("envios.csv")
