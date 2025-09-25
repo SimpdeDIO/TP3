@@ -1,27 +1,12 @@
 import clase
 
-#esto es para el r2.4
-def mayor_monto_por_moneda(envios):
-    monedas = ["ARS", "USD", "EUR", "GBP", "JPY"]
-    n = len(monedas)
-    matriz = []
-    for i in range(n):
-        fila = [0] * n
-        matriz.append(fila)
-
-    for envio in envios:
-        monto_b, _ = monto_base(envio.monto, envio.alg_comision)
-        monto_f = monto_final(monto_b, envio.alg_impositivo)
-        i = envio.codigo_origen - 1
-        j = envio.codigo_pago - 1
-        if monto_f > matriz[i][j]:
-            matriz[i][j] = monto_f
-    return matriz, monedas
+#esto es para el r2.
 
 def mostrar_matriz(matriz, monedas):
     n = len(monedas)
     for i in range(n):
         for j in range(n):
+
             print(f"Origen {monedas[i]} Destino {monedas[j]}: {round(matriz[i][j], 2)}")
 
 def monto_final(monto_base, alg_imp):
@@ -101,6 +86,14 @@ def mostrar(v):
     id_pago_max = ""
     monto_final_max = 0
 
+    monedas = ["ARS", "USD", "EUR", "GBP", "JPY"]
+    n = len(monedas)
+    matriz = []
+    for i in range(n):
+        fila = [0] * n
+        matriz.append(fila)
+
+
     for envio in v:
         monto_b, comision = monto_base(envio.monto, envio.alg_comision)
         porc_comision = (comision / envio.monto) * 100
@@ -116,6 +109,14 @@ def mostrar(v):
             monto_final_max = round(monto_f, 2)
             id_pago_max = str(envio.identificador_pago)
 
+        monto_f *= envio.tasa
+
+        i = envio.codigo_origen - 1
+        j = envio.codigo_pago - 1
+        if monto_f > matriz[i][j]:
+            matriz[i][j] = monto_f
+
+
     #r2.1
     promedio_comisiones = suma_porc / len(v)
     print("r2.1: ", round(promedio_comisiones, 2))
@@ -125,9 +126,9 @@ def mostrar(v):
     print("r2.3: ", monto_final_max)
 
     #r2.4
-    matriz, monedas = mayor_monto_por_moneda(v)
     print("r2.4: ")
     mostrar_matriz(matriz, monedas)
+
 
 def cargar_envios(envios):
     v = []
