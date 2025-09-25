@@ -1,6 +1,4 @@
 import clase
-
-
 #esto es para la r2.1
 def porcentaje_promedio(envios):
     sum_p = 0
@@ -10,7 +8,6 @@ def porcentaje_promedio(envios):
         sum_p += porc
     promedio = sum_p / len(envios)
     return round(promedio, 2)
-
 
 #esto es para el r2.2
 def mayor_descuento(envios):
@@ -28,12 +25,10 @@ def mayor_descuento(envios):
             id_pago_max = envio.identificador_pago
     return id_pago_max
 
-
 #esto es para el r2.3
 def monto_final_2_3(envios):
     max_porc = 0
     max_monto_final = ""
-
     for envio in envios:
         monto_b, comi = monto_base(envio.monto, envio.alg_comision)
         monto_f = monto_final(monto_b, envio.alg_impositivo)
@@ -45,24 +40,29 @@ def monto_final_2_3(envios):
             max_monto_final = envio.monto
     return max_monto_final
 
-
 #esto es para el r2.4
 def mayor_monto_por_moneda(envios):
-    resultados = {}
+    monedas = ["ARS", "USD", "EUR", "GBP", "JPY"]
+    n = len(monedas)
+    matriz = []
+    for i in range(n):
+        fila = [0] * n
+        matriz.append(fila)
 
     for envio in envios:
-        clave = (envio.codigo_origen, envio.codigo_pago)
-
-        # calcular monto final de este envío
         monto_b, _ = monto_base(envio.monto, envio.alg_comision)
         monto_f = monto_final(monto_b, envio.alg_impositivo)
+        i = envio.codigo_origen - 1
+        j = envio.codigo_pago - 1
+        if monto_f > matriz[i][j]:
+            matriz[i][j] = monto_f
+    return matriz, monedas
 
-        # si aún no hay registro o este monto es mayor, lo guardo
-        if clave not in resultados or monto_f > resultados[clave]:
-            resultados[clave] = monto_f
-
-    return resultados
-
+def mostrar_matriz(matriz, monedas):
+    n = len(monedas)
+    for i in range(n):
+        for j in range(n):
+            print(f"Origen {monedas[i]} Destino {monedas[j]}: {round(matriz[i][j], 2)}")
 
 def monto_final(monto_base, alg_imp):
     monto_final = 0
@@ -95,23 +95,17 @@ def monto_final(monto_base, alg_imp):
 def monto_base(monto_nominal, alg_comision):
     monto_base = 0
     comision = 0
-
     if alg_comision == 1:
         comision = (9 / 100) * monto_nominal
         monto_base = monto_nominal - comision
-
     elif alg_comision == 2:
         if monto_nominal < 50000:
                 comision = 0
-
         elif 50000 <= monto_nominal < 80000:
                 comision = (5 / 100) * monto_nominal
-
         elif monto_nominal >= 80000:
                 comision = (7.8 / 100) * monto_nominal
-
         monto_base = monto_nominal - comision
-
     elif alg_comision == 3:
         monto_fijo = 100
         if monto_nominal > 25000:
@@ -120,7 +114,6 @@ def monto_base(monto_nominal, alg_comision):
         else:
             comision = monto_fijo
             monto_base = monto_nominal - comision
-
     elif alg_comision == 4:
         if monto_nominal <= 100000:
             comision = 500
@@ -128,7 +121,6 @@ def monto_base(monto_nominal, alg_comision):
             comision = 1000
 
         monto_base = monto_nominal - comision
-
     elif alg_comision == 5:
         if monto_nominal < 500000:
             comision = 0
@@ -139,7 +131,6 @@ def monto_base(monto_nominal, alg_comision):
             comision = 50000
 
         monto_base = monto_nominal - comision
-
     return monto_base, comision
 
 
@@ -162,9 +153,9 @@ def mostrar(v):
     print("r2.3: ", monto_final_max)
 
     #r2.4
-    resultados = mayor_monto_por_moneda(v)
-    print("r2.4: ", resultados)
-
+    matriz, monedas = mayor_monto_por_moneda(v)
+    print("r2.4: ")
+    mostrar_matriz(matriz, monedas)
 
 def cargar_envios(envios):
     v = []
@@ -217,10 +208,8 @@ def principal():
         print("2. Mostrar Resultados")
         print("0. Salir")
         op = int(input("Ingresa opcion: "))
-
         if op == 1:
             v = cargar_envios("envios.csv")
-
         elif op == 2:
             if v:
                 mostrar(v)
