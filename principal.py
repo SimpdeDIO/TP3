@@ -121,27 +121,39 @@ def mostrar(v):
 
 def cargar_envios(envios):
     v = []
+    envios_leidos_cargados = envios_diferentes = 0
     archivo = open("envios.csv")
     for linea in archivo:
+        linea = linea.strip()
         linea_1 = linea.split(",")
         envio = pasaje_desde_csv(linea_1)
         v.append(envio)
+        envios_leidos_cargados += 1
+
+    n = len(v)
+    for i in range(n):
+        if v[i].codigo_pago != v[i].codigo_origen:
+            envios_diferentes += 1
+    print(envios_leidos_cargados)
+    print(envios_diferentes)
     return v
 
 def pasaje_desde_csv(linea):
-    # 01|05|AB4F35
+
     partes1 = linea[0].split("|")
-    print(partes1) #alguno me va a tener q explicar esto despues (soy ulise)
     mod_origen = int(partes1[0])
     mod_pago = int(partes1[1])
     id_pago = partes1[2]
-    identificacion = linea[1]
-    nombre = linea[2]
+
+    identificacion = linea[1].strip()
+    nombre = linea[2].strip()
     tasa = float(linea[3])
     monto = int(linea[4])
     alg_comision = int(linea[5])
     alg_impositivo = int(linea[6])
+
     envio = clase.Envio(mod_origen, mod_pago, id_pago, identificacion, nombre, tasa, monto, alg_comision, alg_impositivo)
+
     return envio
 
 
@@ -156,7 +168,7 @@ def principal():
 
         if op == 1:
             v = cargar_envios("envios.csv")
-            print(v)
+
         elif op == 2:
             if v:
                 mostrar(v)
