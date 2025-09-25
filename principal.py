@@ -46,6 +46,24 @@ def monto_final_2_3(envios):
     return max_monto_final
 
 
+#esto es para el r2.4
+def mayor_monto_por_moneda(envios):
+    resultados = {}
+
+    for envio in envios:
+        clave = (envio.codigo_origen, envio.codigo_pago)
+
+        # calcular monto final de este envío
+        monto_b, _ = monto_base(envio.monto, envio.alg_comision)
+        monto_f = monto_final(monto_b, envio.alg_impositivo)
+
+        # si aún no hay registro o este monto es mayor, lo guardo
+        if clave not in resultados or monto_f > resultados[clave]:
+            resultados[clave] = monto_f
+
+    return resultados
+
+
 def monto_final(monto_base, alg_imp):
     monto_final = 0
     impuesto = 0
@@ -142,6 +160,10 @@ def mostrar(v):
     #r2.3
     monto_final_max = monto_final_2_3(v)
     print("r2.3: ", monto_final_max)
+
+    #r2.4
+    resultados = mayor_monto_por_moneda(v)
+    print("r2.4: ", resultados)
 
 
 def cargar_envios(envios):
